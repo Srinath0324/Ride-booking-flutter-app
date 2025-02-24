@@ -39,274 +39,280 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = const Color(0xff4f46e5);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Book a Ride'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.pushNamed(context, '/profile');
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              if (!mounted) return;
-              final navigator = Navigator.of(context);
-
-              await Provider.of<AuthProvider>(context, listen: false).logout();
-              if (!mounted) return;
-              navigator.pushReplacementNamed('/login');
-            },
-          ),
-        ],
-      ),
-      body: Column(
+      backgroundColor: Colors.grey[50],
+      body: ListView(
+        padding: EdgeInsets.zero,
         children: [
-          // Search bars with suggestions
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                // Pickup location with filtered suggestions
-                Column(
-                  children: [
-                    TextField(
-                      controller: _pickupController,
-                      decoration: const InputDecoration(
-                        labelText: 'Pickup Location',
-                        prefixIcon: Icon(Icons.location_on),
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          _showPickupSuggestions = value.isNotEmpty;
-                          _showDestinationSuggestions = false;
-                          // Filter suggestions based on input
-                          _filteredPickupSuggestions =
-                              _locationSuggestions
-                                  .where(
-                                    (location) => location
-                                        .toLowerCase()
-                                        .contains(value.toLowerCase()),
-                                  )
-                                  .toList();
-                        });
-                      },
-                    ),
-                    if (_showPickupSuggestions &&
-                        _filteredPickupSuggestions.isNotEmpty)
-                      Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(4),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withAlpha(77),
-                              spreadRadius: 1,
-                              blurRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.zero,
-                          itemCount: _filteredPickupSuggestions.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              dense: true,
-                              title: Text(_filteredPickupSuggestions[index]),
-                              onTap: () {
-                                setState(() {
-                                  _pickupController.text =
-                                      _filteredPickupSuggestions[index];
-                                  _showPickupSuggestions = false;
-                                });
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                // Destination with filtered suggestions
-                Column(
-                  children: [
-                    TextField(
-                      controller: _destinationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Destination',
-                        prefixIcon: Icon(Icons.location_on),
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          _showDestinationSuggestions = value.isNotEmpty;
-                          _showPickupSuggestions = false;
-                          // Filter suggestions based on input
-                          _filteredDestinationSuggestions =
-                              _locationSuggestions
-                                  .where(
-                                    (location) => location
-                                        .toLowerCase()
-                                        .contains(value.toLowerCase()),
-                                  )
-                                  .toList();
-                        });
-                      },
-                    ),
-                    if (_showDestinationSuggestions &&
-                        _filteredDestinationSuggestions.isNotEmpty)
-                      Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(4),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withAlpha(77),
-                              spreadRadius: 1,
-                              blurRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.zero,
-                          itemCount: _filteredDestinationSuggestions.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              dense: true,
-                              title: Text(
-                                _filteredDestinationSuggestions[index],
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  _destinationController.text =
-                                      _filteredDestinationSuggestions[index];
-                                  _showDestinationSuggestions = false;
-                                });
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          // Improved static map placeholder
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                border: Border.all(color: Colors.grey[400]!),
+          // Gradient Header
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  primaryColor,
+                  primaryColor.withOpacity(0.9),
+                ],
               ),
-              child: Stack(
-                children: [
-                  // Grid pattern for map-like appearance
-                  GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 15,
-                        ),
-                    itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey[300]!,
-                            width: 0.5,
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(32),
+                bottomRight: Radius.circular(32),
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header with profile
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Hey, ${Provider.of<AuthProvider>(context).userName ?? 'User'} 👋',
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            color: Colors.white,
+                            fontSize: 24,
                           ),
                         ),
-                      );
-                    },
-                  ),
-                  // Map markers and route
-                  CustomPaint(size: Size.infinite, painter: RoutePathPainter()),
-                  // Center location indicator
-                  const Center(
-                    child: Icon(
-                      Icons.location_on,
-                      color: Colors.blue,
-                      size: 40,
-                    ),
-                  ),
-                  // Zoom controls
-                  Positioned(
-                    right: 16,
-                    bottom: 16,
-                    child: Column(
-                      children: [
-                        FloatingActionButton.small(
-                          onPressed: () {},
-                          child: const Icon(Icons.add),
+                        GestureDetector(
+                          onTap: () => Navigator.pushNamed(context, '/profile'),
+                          child: CircleAvatar(
+                            backgroundColor: Colors.white.withOpacity(0.2),
+                            child: const Icon(Icons.person, color: Colors.white),
+                          ),
                         ),
-                        const SizedBox(height: 8),
-                        FloatingActionButton.small(
-                          onPressed: () {},
-                          child: const Icon(Icons.remove),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    // Search inputs
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: _pickupController,
+                            decoration: InputDecoration(
+                              hintText: 'Pick up ',
+                              prefixIcon: Icon(Icons.location_on_outlined, color: primaryColor),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _showPickupSuggestions = value.isNotEmpty;
+                                _filteredPickupSuggestions = _locationSuggestions
+                                    .where((location) => location.toLowerCase().contains(value.toLowerCase()))
+                                    .toList();
+                              });
+                            },
+                          ),
+                          Divider(height: 1, color: Colors.grey[200]),
+                          TextField(
+                            controller: _destinationController,
+                            decoration: InputDecoration(
+                              hintText: 'Destination',
+                              prefixIcon: Icon(Icons.location_on, color: primaryColor),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _showDestinationSuggestions = value.isNotEmpty;
+                                _filteredDestinationSuggestions = _locationSuggestions
+                                    .where((location) => location.toLowerCase().contains(value.toLowerCase()))
+                                    .toList();
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Location suggestions if any
+          if (_showPickupSuggestions && _filteredPickupSuggestions.isNotEmpty)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 2,
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemCount: _filteredPickupSuggestions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    dense: true,
+                    title: Text(_filteredPickupSuggestions[index]),
+                    onTap: () {
+                      setState(() {
+                        _pickupController.text = _filteredPickupSuggestions[index];
+                        _showPickupSuggestions = false;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          if (_showDestinationSuggestions && _filteredDestinationSuggestions.isNotEmpty)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 2,
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemCount: _filteredDestinationSuggestions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    dense: true,
+                    title: Text(_filteredDestinationSuggestions[index]),
+                    onTap: () {
+                      setState(() {
+                        _destinationController.text = _filteredDestinationSuggestions[index];
+                        _showDestinationSuggestions = false;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          // Content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Map placeholder
+                if (!_showPickupSuggestions && !_showDestinationSuggestions)
+                  Container(
+                    height: 200,
+                    margin: const EdgeInsets.only(bottom: 24),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: GridView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 15,
+                            ),
+                            itemBuilder: (context, index) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.grey[300]!,
+                                    width: 0.5,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        CustomPaint(
+                          size: Size.infinite,
+                          painter: RoutePathPainter(),
+                        ),
+                        Center(
+                          child: Icon(
+                            Icons.location_on,
+                            color: primaryColor,
+                            size: 40,
+                          ),
+                        ),
+                        Positioned(
+                          right: 16,
+                          bottom: 16,
+                          child: Column(
+                            children: [
+                              FloatingActionButton.small(
+                                heroTag: 'zoom_in',
+                                backgroundColor: Colors.white,
+                                elevation: 2,
+                                onPressed: () {},
+                                child: Icon(Icons.add, color: primaryColor),
+                              ),
+                              const SizedBox(height: 8),
+                              FloatingActionButton.small(
+                                heroTag: 'zoom_out',
+                                backgroundColor: Colors.white,
+                                elevation: 2,
+                                onPressed: () {},
+                                child: Icon(Icons.remove, color: primaryColor),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-          // Ride options
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withAlpha(77),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, -3),
+                Text(
+                  'Choose your ride',
+                  style: theme.textTheme.titleLarge,
                 ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Available Rides',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/booking');
-                        },
-                        child: const Text('Drive Now'),
+                      child: _buildRideOption(
+                        context,
+                        icon: Icons.directions_car,
+                        title: 'Drive Now',
+                        subtitle: 'From ₹250',
+                        onTap: () => Navigator.pushNamed(context, '/booking'),
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 16),
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
+                      child: _buildRideOption(
+                        context,
+                        icon: Icons.schedule,
+                        title: 'Schedule',
+                        subtitle: 'Book ahead',
+                        onTap: () async {
                           if (!mounted) return;
-                          final messenger = ScaffoldMessenger.of(context);
-
                           final date = await showDatePicker(
                             context: context,
                             initialDate: DateTime.now(),
                             firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(
-                              const Duration(days: 7),
-                            ),
+                            lastDate: DateTime.now().add(const Duration(days: 7)),
                           );
 
                           if (date != null && mounted) {
@@ -317,23 +323,140 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             if (time != null && mounted) {
                               final timeStr = time.format(context);
-                              messenger.showSnackBar(
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
                                     'Ride scheduled for ${date.toString().split(' ')[0]} at $timeStr',
                                   ),
                                 ),
                               );
+                              Navigator.pushNamed(context, '/booking');
                             }
                           }
                         },
-                        child: const Text('Schedule'),
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 24),
+                Text(
+                  'Recent Rides',
+                  style: theme.textTheme.titleLarge,
+                ),
+                const SizedBox(height: 16),
+                _buildRecentRide(
+                  context,
+                  icon: Icons.home,
+                  title: 'Home → Office',
+                  subtitle: '5.2 km • 15 mins',
+                  date: 'March 15, 2024',
+                  price: '₹250',
+                  rating: 4.8,
+                ),
+                const SizedBox(height: 12),
+                _buildRecentRide(
+                  context,
+                  icon: Icons.business,
+                  title: 'Office → Mall',
+                  subtitle: '3.8 km • 12 mins',
+                  date: 'March 14, 2024',
+                  price: '₹180',
+                  rating: 4.9,
+                ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRideOption(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final primaryColor = const Color(0xff4f46e5);
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: primaryColor.withOpacity(0.1)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 32, color: primaryColor),
+            const SizedBox(height: 12),
+            Text(title, style: theme.textTheme.titleLarge?.copyWith(fontSize: 16)),
+            const SizedBox(height: 4),
+            Text(subtitle, style: theme.textTheme.bodyMedium),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecentRide(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String date,
+    required String price,
+    required double rating,
+  }) {
+    final theme = Theme.of(context);
+    final primaryColor = const Color(0xff4f46e5);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: primaryColor.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: primaryColor),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: theme.textTheme.titleMedium),
+                const SizedBox(height: 4),
+                Text(subtitle, style: theme.textTheme.bodyMedium),
+                const SizedBox(height: 4),
+                Text(date, style: theme.textTheme.bodySmall),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(price, style: theme.textTheme.titleMedium),
+              Row(
+                children: [
+                  const Icon(Icons.star, size: 16, color: Colors.amber),
+                  const SizedBox(width: 4),
+                  Text(rating.toString(), style: theme.textTheme.bodyMedium),
+                ],
+              ),
+            ],
           ),
         ],
       ),
@@ -345,21 +468,19 @@ class _HomeScreenState extends State<HomeScreen> {
 class RoutePathPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint =
-        Paint()
-          ..color = Colors.blue.withAlpha(128)
-          ..strokeWidth = 3
-          ..style = PaintingStyle.stroke;
+    final paint = Paint()
+      ..color = const Color(0xff4f46e5).withAlpha(128)
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke;
 
-    final path =
-        Path()
-          ..moveTo(size.width * 0.2, size.height * 0.3)
-          ..quadraticBezierTo(
-            size.width * 0.5,
-            size.height * 0.5,
-            size.width * 0.8,
-            size.height * 0.7,
-          );
+    final path = Path()
+      ..moveTo(size.width * 0.2, size.height * 0.3)
+      ..quadraticBezierTo(
+        size.width * 0.5,
+        size.height * 0.5,
+        size.width * 0.8,
+        size.height * 0.7,
+      );
 
     canvas.drawPath(path, paint);
   }

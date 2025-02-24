@@ -2,13 +2,16 @@ import 'package:flutter/foundation.dart';
 
 class AuthProvider with ChangeNotifier {
   bool _isAuthenticated = false;
+  String? _userName;
 
   bool get isAuthenticated => _isAuthenticated;
+  String? get userName => _userName;
 
   Future<void> login(String mobile, String password) async {
     // Simulate API call
     await Future.delayed(const Duration(seconds: 2));
     _isAuthenticated = true;
+    _userName = "Alex"; // Default name for demo
     notifyListeners();
   }
 
@@ -16,6 +19,7 @@ class AuthProvider with ChangeNotifier {
     // Simulate API call
     await Future.delayed(const Duration(seconds: 1));
     _isAuthenticated = false;
+    _userName = null;
     notifyListeners();
   }
 
@@ -23,6 +27,7 @@ class AuthProvider with ChangeNotifier {
     // Simulate API call
     await Future.delayed(const Duration(seconds: 2));
     _isAuthenticated = true;
+    _userName = name;
     notifyListeners();
   }
 
@@ -36,6 +41,7 @@ class AuthProvider with ChangeNotifier {
     // Simulate Google sign-in
     await Future.delayed(const Duration(seconds: 2));
     _isAuthenticated = true;
+    _userName = "Alex"; // Default name for demo
     notifyListeners();
   }
 
@@ -43,6 +49,7 @@ class AuthProvider with ChangeNotifier {
     // Simulate Facebook sign-in
     await Future.delayed(const Duration(seconds: 2));
     _isAuthenticated = true;
+    _userName = "Alex"; // Default name for demo
     notifyListeners();
   }
 } 
